@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<!-- saved from url=(0030)http://localhost:5000/donation -->
+<html class="gr__localhost"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Donation</title>
+	<link rel="stylesheet" href="./Donation_files/bootstrap.min.css">
+</head>
+<body data-gr-c-s-loaded="true">
+	<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+      <a class="navbar-brand" href="http://localhost:5000/donation#">Assistance Management</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/login">Login/Signup</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/donation">Donation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/request">Request/Match</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+	<div class="container">
+		
+  
+
+
+
+
+
+		
+
+	<div class="container"><h3 class="h3">Please Enter and Submit Your Donation Form Below:</h3></div>
+	
+	<div class="container"><p>If your material to be donated is not in below list, please click the "New Material" button and submit your material first.</p></div>
+	<div class="container">
+		<form action="http://localhost:5000/new_material">
+			<input type="submit" value="New Material" class="btn btn-primary" href="">
+		</form>
+	</div>
+	
+	<table class="table">
+    	<caption style="caption-side: top">Material List</caption>
+	  <tbody><tr>
+	    <th>Material ID</th>
+	    <th>Material Name</th> 
+	    <th>Unit</th>
+	    <th>Quantity in Total</th>
+	  </tr>
+	  	
+		  <tr>
+		    <td>1</td>
+		    <td>apple</td> 
+		    <td>pound</td>
+		    <td>100</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>2</td>
+		    <td>sugar</td> 
+		    <td>pound</td>
+		    <td>1000</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>3</td>
+		    <td>flour</td> 
+		    <td>pound</td>
+		    <td>200</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>4</td>
+		    <td>water</td> 
+		    <td>gallon</td>
+		    <td>500</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>5</td>
+		    <td>beef</td> 
+		    <td>pound</td>
+		    <td>233</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>6</td>
+		    <td>tent</td> 
+		    <td>each</td>
+		    <td>10</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>7</td>
+		    <td>strawberry</td> 
+		    <td>pound</td>
+		    <td>101</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>8</td>
+		    <td>strawberry</td> 
+		    <td>pound</td>
+		    <td>2334</td>
+		  </tr>
+	   	
+		  <tr>
+		    <td>9</td>
+		    <td>watermellon</td> 
+		    <td>pound</td>
+		    <td>1</td>
+		  </tr>
+	   	
+	</tbody></table>
+
+	
+	
+	<div class="container">		
+		<form method="POST" action="http://localhost:5000/donation">
+			<div class="form-group">
+				
+  <label for="UserID">UserID (Your UserID)</label>
+  <input class="form-control" id="UserID" name="UserID" required="" type="text" value="">
+  
+
+			</div>
+			<div class="form-group">
+				
+  <label for="MaterialID">MaterialID (Choose from below list)</label>
+  <input class="form-control" id="MaterialID" name="MaterialID" required="" type="text" value="">
+  
+
+			</div>
+			<div class="form-group">
+				
+  <label for="QuantityAvailable">Quantity (Integer only, check unit from below list)</label>
+  <input class="form-control" id="QuantityAvailable" name="QuantityAvailable" type="text" value="">
+  
+
+			</div>
+			<div class="form-group">
+				
+  <label for="Available">Material Available Date (Date format: YYYY-MM-DD)</label>
+  <input class="form-control" id="Available" name="Available" type="text" value="">
+  
+
+			</div>
+			<div class="form-group">
+				
+  <label for="Expiration">Expiration Date (Date format: YYYY-MM-DD)</label>
+  <input class="form-control" id="Expiration" name="Expiration" type="text" value="">
+  
+
+			</div>
+			<div class="form-group">
+				
+  <label for="TitleID">TitleID (Choose from below occupation list, type 15 for non-volunteer)</label>
+  <input class="form-control" id="TitleID" name="TitleID" required="" type="text" value="">
+  
+
+			</div>
+			
+			
+			<p><input type="submit" value="Submit" class="btn btn-primary"></p>
+		</form>
+	</div>
+
+    <table class="table">
+    	<caption style="caption-side: top">Volunteer Occupation List</caption>
+	  <tbody><tr>
+	    <th>Title ID</th>
+	    <th>Volunteer Occupation</th> 
+	  </tr>
+	  	
+		  <tr>
+		    <td>1</td>
+		    <td>Rescuer</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>2</td>
+		    <td>Community Outreach</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>3</td>
+		    <td>Emergency Management</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>4</td>
+		    <td>General Volunteers</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>5</td>
+		    <td>Linesmen</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>6</td>
+		    <td>First Aid</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>7</td>
+		    <td>Ambulance Service</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>8</td>
+		    <td>Drivers</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>9</td>
+		    <td>Technicians</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>10</td>
+		    <td>Roading &amp; Infrastructure staff</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>11</td>
+		    <td>Therapists</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>12</td>
+		    <td>Restoration Specialists</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>13</td>
+		    <td>Disaster Relief Workers</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>14</td>
+		    <td>Mechanics</td> 
+		  </tr>
+	   	
+		  <tr>
+		    <td>15</td>
+		    <td>Not A Volunteer</td> 
+		  </tr>
+	   	
+	</tbody></table>
+
+	
+
+	<div class="container"><h3>Below for presentation use only: </h3></div>
+
+	<table class="table">
+    	<caption style="caption-side: top">Donation List</caption>
+	  <tbody><tr>
+	    <th>User ID</th>
+	    <th>Material ID</th> 
+	    <th>Quantity Available</th> 
+	    <th>Available Date From</th> 
+	    <th>Expiration Date On</th> 
+	    <th>Title ID</th>
+
+	  </tr>
+	  	
+		  <tr>
+		    <td>1</td>
+		    <td>1</td> 
+		    <td>100</td> 
+		    <td>2014-11-01</td> 
+		    <td>1</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>2</td>
+		    <td>2</td> 
+		    <td>500</td> 
+		    <td>2015-12-01</td> 
+		    <td>2</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>3</td>
+		    <td>2</td> 
+		    <td>500</td> 
+		    <td>2015-12-02</td> 
+		    <td>3</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>4</td>
+		    <td>3</td> 
+		    <td>200</td> 
+		    <td>2016-12-01</td> 
+		    <td>3</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>5</td>
+		    <td>4</td> 
+		    <td>500</td> 
+		    <td>2020-12-01</td> 
+		    <td>3</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>6</td>
+		    <td>5</td> 
+		    <td>233</td> 
+		    <td>2014-06-01</td> 
+		    <td>3</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>7</td>
+		    <td>6</td> 
+		    <td>10</td> 
+		    <td>2025-01-01</td> 
+		    <td>3</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>8</td>
+		    <td>7</td> 
+		    <td>101</td> 
+		    <td>2014-07-07</td> 
+		    <td>1</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>9</td>
+		    <td>8</td> 
+		    <td>2334</td> 
+		    <td>2014-07-08</td> 
+		    <td>2</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+		  <tr>
+		    <td>10</td>
+		    <td>9</td> 
+		    <td>1</td> 
+		    <td>2014-07-09</td> 
+		    <td>4</td> 
+		    <td>15</td> 
+
+		  </tr>
+	   	
+	</tbody></table>
+
+
+		
+	</div>
+	
+
+
+	<script src="./Donation_files/bootstrap.min.js.download"></script>
+
+</body></html>

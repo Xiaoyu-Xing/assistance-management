@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+	<div class="container"><h3 class="h3">Please Enter and Submit Your Donation Form Below:</h3></div>
+	
+	<div class="container"><p>If your material to be donated is not in below list, please click the "New Material" button and submit your material first.</p></div>
+	<div class="container">
+		<form action="/new_material">
+			<input type="submit" value="New Material" class="btn btn-primary" href>
+		</form>
+	</div>
+	
+	<table class="table">
+    	<caption style="caption-side: top">Material List</caption>
+	  <tr>
+	    <th>Material ID</th>
+	    <th>Material Name</th> 
+	    <th>Unit</th>
+	    <th>Quantity in Total</th>
+	  </tr>
+	  	{% for each in data["material"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		    <td>{{each[1]}}</td> 
+		    <td>{{each[2]}}</td>
+		    <td>{{each[3]}}</td>
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+	{% from "includes/_formhelpers.html" import render_field %}
+	
+	<div class="container">		
+		<form method="POST" action="">
+			<div class="form-group">
+				{{render_field(form.UserID, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.MaterialID, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.QuantityAvailable, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.Available, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.Expiration, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.TitleID, class_="form-control")}}
+			</div>
+			
+			
+			<p><input type="submit" value="Submit" class="btn btn-primary"></p>
+		</form>
+	</div>
+
+    <table class="table">
+    	<caption style="caption-side: top">Volunteer Occupation List</caption>
+	  <tr>
+	    <th>Title ID</th>
+	    <th>Volunteer Occupation</th> 
+	  </tr>
+	  	{% for each in data["volunteer"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		    <td>{{each[1]}}</td> 
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+	
+
+	<div class="container"><h3>Below for presentation use only: </h3></div>
+
+	<table class="table">
+    	<caption style="caption-side: top">Donation List</caption>
+	  <tr>
+	    <th>Donation ID</th>
+	  	<th>User ID</th>
+	    <th>Material ID</th> 
+	    <th>Quantity Available</th> 
+	    <th>Available Date From</th> 
+	    <th>Expiration Date On</th> 
+	    <th>Title ID</th>
+
+	  </tr>
+	  	{% for each in data["donation"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		  	<td>{{each[4]}}</td>
+		    <td>{{each[1]}}</td> 
+		    <td>{{each[2]}}</td> 
+		    <td>{{each[6]}}</td> 
+		    <td>{{each[3]}}</td> 
+		    <td>{{each[5]}}</td> 
+
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+{% endblock %}
