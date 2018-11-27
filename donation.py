@@ -8,6 +8,7 @@ from flask_mysqldb import MySQL
 # rule: all the string passed to sql need in double quote
 
 def execute_sql(db, sql):
+    # execute sql for insert or update table
     try:
         cursor = db.cursor()
         cursor.execute(sql)
@@ -20,6 +21,7 @@ def execute_sql(db, sql):
         cursor.close()
         return False
 def get_db_data(db, sql):
+    # execute sql to get data (select)
     try:
         cursor = db.cursor()
         cursor.execute(sql)
@@ -31,6 +33,7 @@ def get_db_data(db, sql):
         cursor.close()
 
 def fill_volunteer(db):
+    # used to fill initial fake data
     occupations = {1: "Rescuer", 2: "Community Outreach", 3: "Emergency Management", 4: "General Volunteers", 
                5: "Linesmen", 6: "First Aid", 7: "Ambulance Service", 8: "Drivers", 9: "Technicians",
                10: "Roading & Infrastructure staff", 11: "Therapists", 12: "Restoration Specialists",
@@ -40,6 +43,7 @@ def fill_volunteer(db):
         execute_sql(db, sql)
 
 def fill_material(db):
+    # used to fill initial fake data
     data = [["apple", "pound", 100], ["sugar", "pound", 1000], ["flour", "pound", 200], 
             ["water", "gallon", 500], ["beef", "pound", 233], ["tent", "each", 10]]
     for name, unit, quantitytotal in data:
@@ -47,6 +51,7 @@ def fill_material(db):
         execute_sql(db, sql)
 
 def fill_donation(db):
+    # used to fill initial fake data
     data = [[1, 100, "2014-11-01", 1, 15, "2013-11-01"], [2, 500, "2015-12-01", 2, 15, "2013-12-01"],
             [2, 500, "2015-12-02", 3, 15, "2013-12-02"],[3, 200, "2016-12-01", 3, 15, "2013-12-01"],
            [4, 500, "2020-12-01", 3, 15, "2013-12-01"], [5, 233, "2014-06-01", 3, 15, "2013-12-01"],
@@ -57,11 +62,13 @@ def fill_donation(db):
 
 def run_once_to_fill_data(db):
     # assume DB and tables are created
+    # used to fill initial fake data
     fill_volunteer(db)
     fill_material(db)
     fill_donation(db)
 
 def connection():
+    #connect to db
     db = MySQLdb.connect(host='localhost', user='root', passwd='root', db='assistancemanagement')
     # run_once_to_fill_data(db) # used to initialize fake data in database
     cursor = db.cursor()
@@ -70,6 +77,7 @@ def connection():
 db = connection()
 
 app = Flask(__name__)
+# flask object to initiate webpage
 
 # app.config['MYSQL_HOST'] = 'localhost'
 # app.config['MYSQL_USER'] = 'root'
@@ -84,11 +92,13 @@ def home():
     return render_template('home.html')
 
 data={}
+# get data from sql db for web use
 data["material"] = get_db_data(db, 'select MaterialID, MaterialName, Unit, QuantityTotal from Material;')
 data["volunteer"] = get_db_data(db, 'select TitleID, Name from Volunteer;')
 data["donation"] = get_db_data(db, 'select * from Donation;')
 
 class DonationForm(Form):
+    # build form to be finised by user
     UserID = IntegerField("UserID (Your UserID)", [
         validators.DataRequired(),
         validators.NumberRange(min=0)])
@@ -106,6 +116,7 @@ class DonationForm(Form):
         validators.DataRequired(),
         validators.NumberRange(min=0)])
 class NewMaterialForm(Form):
+    # build form to be finised by user
     name = StringField('Name (Lower case, singular form)', [
         validators.DataRequired(),
         validators.Length(min=2, max=255)])
@@ -117,11 +128,13 @@ class NewMaterialForm(Form):
 def new_material():
     form = NewMaterialForm(request.form)
     if request.method == 'POST' and form.validate():
+        # retreive data from user form
         name = form.name.data
         unit = form.unit.data
-
+        # update sql db into material table
         sql_new_material = f'INSERT INTO Material (MaterialName, Unit, QuantityTotal) \
                 VALUES ("{name}", "{unit}", 0)'
+        # execute db and notify user
         if execute_sql(db, sql_new_material):
             flash("You registered a new material. Next please submit your donation form", "success")
         return redirect(url_for('donation'))
@@ -132,18 +145,20 @@ def new_material():
 def donation():
     form = DonationForm(request.form)
     if request.method == 'POST' and form.validate():
+        # retreive data from user form
         MaterialID = form.MaterialID.data
         QuantityAvailable = form.QuantityAvailable.data
         Expiration = form.Expiration.data
         UserID = form.UserID.data
         TitleID = form.TitleID.data
         Available = form.Available.data
-
+        # get old data and for calculation of new total quantity
         old_quantity_total = get_db_data(db, f'SELECT QuantityTotal FROM Material WHERE MaterialID="{MaterialID}"')
-
+        # update sql db into material table
         sql_new_donation = f'INSERT INTO Donation (MaterialID, QuantityAvailable, Expiration, UserID, TitleID, Available) \
                 VALUES ({MaterialID}, {QuantityAvailable}, "{Expiration}", {UserID}, {TitleID}, "{Available}")'
         sql_update_material = f'UPDATE Material SET QuantityTotal="{int(old_quantity_total[0][0])+int(QuantityAvailable)}" WHERE MaterialID="{MaterialID}"'
+        # execute db and notify user
         if execute_sql(db, sql_new_donation) and execute_sql(db, sql_update_material):
             flash("Thank you. We got your donation information. You will be contacted if there is a match for your donation.", "success")
         return redirect(url_for('donation'))
@@ -152,10 +167,9 @@ def donation():
 
 
 
+app.secret_key='secret_key' # must have to run WTForm
 
 if __name__ == '__main__':
-    app.secret_key='secret_key'
     app.run(debug=True, host='127.0.0.1', port=5000)
-
 
 db.close()
