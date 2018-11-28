@@ -12,7 +12,7 @@
 	</div>
 	
 	<table class="table">
-    	<caption style="caption-side: top">Material List</caption>
+    	<caption style="caption-side: top">Material List (unit and quantity listed for presentation purpose, dropdown menu is a better option, but not the focus of this course)</caption>
 	  <tr>
 	    <th>Material ID</th>
 	    <th>Material Name</th> 
@@ -58,7 +58,7 @@
 	</div>
 
     <table class="table">
-    	<caption style="caption-side: top">Volunteer Occupation List</caption>
+    	<caption style="caption-side: top">Volunteer Occupation List (Dropdown menu is a better option, but not the focus of this course.)</caption>
 	  <tr>
 	    <th>Title ID</th>
 	    <th>Volunteer Occupation</th> 
@@ -80,22 +80,22 @@
 	  <tr>
 	    <th>Donation ID</th>
 	  	<th>User ID</th>
-	    <th>Material ID</th> 
+	    <th>Material Name</th> 
 	    <th>Quantity Available</th> 
 	    <th>Available Date From</th> 
 	    <th>Expiration Date On</th> 
-	    <th>Title ID</th>
+	    <th>Volunteer Occupation</th>
 
 	  </tr>
 	  	{% for each in data["donation"] %}
 		  <tr>
 		    <td>{{each[0]}}</td>
-		  	<td>{{each[4]}}</td>
-		    <td>{{each[1]}}</td> 
+		  	<td>{{each[1]}}</td>
 		    <td>{{each[2]}}</td> 
-		    <td>{{each[6]}}</td> 
 		    <td>{{each[3]}}</td> 
+		    <td>{{each[4]}}</td> 
 		    <td>{{each[5]}}</td> 
+		    <td>{{each[6]}}</td> 
 
 		  </tr>
 	   	{% endfor %}

@@ -95,7 +95,10 @@ def get_new_data():
     # get data from sql db for web use
     data["material"] = get_db_data(db, 'select MaterialID, MaterialName, Unit, QuantityTotal from Material;')
     data["volunteer"] = get_db_data(db, 'select TitleID, Name from Volunteer;')
-    data["donation"] = get_db_data(db, 'select * from Donation;')
+    data["donation"] = get_db_data(db, 'select Donation.DonationID, Donation.UserID, Material.MaterialName,\
+                                    Donation.QuantityAvailable, Donation.Available, Donation.Expiration, Volunteer.Name from donation\
+                                    left join material on Donation.MaterialID = Material.MaterialID\
+                                    join volunteer on Donation.TitleID = Volunteer.TitleID;')
     return data
 
 class DonationForm(Form):
