@@ -1,8 +1,28 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+	<div class="container"><h3>If the event is not listed below, please submit a new one.</h3></div>
 
-	<div class="container"><h3>Please submit the new event/disaster.</h3></div>
+	<table class="table">
+    	<caption style="caption-side: top">Event List</caption>
+	  <tr>
+	    <th>Event ID</th>
+	  	<th>Country</th>
+	    <th>City</th> 
+	    <th>Zipcode</th> 
+
+	  </tr>
+	  	{% for each in data %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		  	<td>{{each[1]}}</td>
+		    <td>{{each[2]}}</td> 
+		    <td>{{each[3]}}</td> 
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+	
 	
 	{% from "includes/_formhelpers.html" import render_field %}
 	<div class="container">		
@@ -20,5 +40,6 @@
 		</form>
 	</div>
 
+	
 	
 {% endblock %}
