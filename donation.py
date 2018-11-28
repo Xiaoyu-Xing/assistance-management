@@ -90,12 +90,13 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('home.html')
-
-data={}
-# get data from sql db for web use
-data["material"] = get_db_data(db, 'select MaterialID, MaterialName, Unit, QuantityTotal from Material;')
-data["volunteer"] = get_db_data(db, 'select TitleID, Name from Volunteer;')
-data["donation"] = get_db_data(db, 'select * from Donation;')
+def get_new_data():
+    data={}
+    # get data from sql db for web use
+    data["material"] = get_db_data(db, 'select MaterialID, MaterialName, Unit, QuantityTotal from Material;')
+    data["volunteer"] = get_db_data(db, 'select TitleID, Name from Volunteer;')
+    data["donation"] = get_db_data(db, 'select * from Donation;')
+    return data
 
 class DonationForm(Form):
     # build form to be finised by user
@@ -103,16 +104,14 @@ class DonationForm(Form):
         validators.DataRequired(),
         validators.NumberRange(min=0)])
 
-    MaterialID = IntegerField('MaterialID (Choose from below list)', [
-        validators.DataRequired(),
-        validators.NumberRange(min=0)])
+    MaterialID = IntegerField('MaterialID (Choose from above list. Input "0" for volunteer)', [validators.NumberRange(min=0)])
 
-    QuantityAvailable = IntegerField('Quantity (Integer only, check unit from below list)', [validators.NumberRange(min=0)])
+    QuantityAvailable = IntegerField('Quantity (Integer only, check unit from above list. Input "0" for volunteer)', [validators.NumberRange(min=0)])
     
-    Expiration = DateField('Expiration Date (Date format: YYYY-MM-DD)', format='%Y-%m-%d')
-    Available = DateField('Material Available Date (Date format: YYYY-MM-DD)', format='%Y-%m-%d')
+    Expiration = DateField('Material/Volunteer Expiration Date (Date format: YYYY-MM-DD)', format='%Y-%m-%d')
+    Available = DateField('Material/Volunteer Available Date (Date format: YYYY-MM-DD)', format='%Y-%m-%d')
     
-    TitleID = IntegerField("TitleID (Choose from below occupation list, type 15 for non-volunteer)", [
+    TitleID = IntegerField('TitleID (Choose from below occupation list, input "15" for non-volunteer, 4 for general volunteer)', [
         validators.DataRequired(),
         validators.NumberRange(min=0)])
 class NewMaterialForm(Form):
@@ -152,22 +151,36 @@ def donation():
         UserID = form.UserID.data
         TitleID = form.TitleID.data
         Available = form.Available.data
-        # get old data and for calculation of new total quantity
-        old_quantity_total = get_db_data(db, f'SELECT QuantityTotal FROM Material WHERE MaterialID="{MaterialID}"')
-        # update sql db into material table
-        sql_new_donation = f'INSERT INTO Donation (MaterialID, QuantityAvailable, Expiration, UserID, TitleID, Available) \
-                VALUES ({MaterialID}, {QuantityAvailable}, "{Expiration}", {UserID}, {TitleID}, "{Available}")'
-        sql_update_material = f'UPDATE Material SET QuantityTotal="{int(old_quantity_total[0][0])+int(QuantityAvailable)}" WHERE MaterialID="{MaterialID}"'
-        # execute db and notify user
-        if execute_sql(db, sql_new_donation) and execute_sql(db, sql_update_material):
-            flash("Thank you. We got your donation information. You will be contacted if there is a match for your donation.", "success")
-        return redirect(url_for('donation'))
+        
+        
+        if int(TitleID) == 15:
+            # get old data and for calculation of new total quantity
+            old_quantity_total = get_db_data(db, f'SELECT QuantityTotal FROM Material WHERE MaterialID="{MaterialID}"')
+            # update sql db into material table
+            sql_new_donation = f'INSERT INTO Donation (MaterialID, QuantityAvailable, Expiration, UserID, TitleID, Available) \
+                    VALUES ({MaterialID}, {QuantityAvailable}, "{Expiration}", {UserID}, {TitleID}, "{Available}")'
+            sql_update_material = f'UPDATE Material SET QuantityTotal="{int(old_quantity_total[0][0])+int(QuantityAvailable)}" WHERE MaterialID="{MaterialID}"'
+            # execute db and notify user
+            if execute_sql(db, sql_new_donation) and execute_sql(db, sql_update_material):
+                flash("Thank you. We got your donation information. You will be contacted if there is a match for your donation.", "success")
+        else:
+            # update sql db into material table
+            sql_new_donation = 'INSERT INTO Donation (Expiration, UserID, TitleID, Available) \
+            values ("2014-07-15", 11, 2, "2013-07-14");'
+            # sql_new_donation = f'INSERT INTO Donation (Expiration, UserID, TitleID, Available) \
+            #         VALUES ("{Expiration}", {UserID}, {TitleID}, "{Available}")'
+            print("---------------------------------------------------------------")
+            print(sql_new_donation)
+            if execute_sql(db, sql_new_donation):
+                flash("Thank you. We got your volunteering information. You will be contacted if there is a match for your expertise.", "success")
+        return redirect(url_for('home')) # pass in the function name to url_for
 
-    return render_template('donation.html', data=data, form=form)
+
+    return render_template('donation.html', data=get_new_data(), form=form)
 
 
 
-app.secret_key='secret_key' # must have to run WTForm
+app.secret_key='secret_key' # a must have, and will be replaced with a real secret key for production
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
