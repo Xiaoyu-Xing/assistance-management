@@ -27,6 +27,14 @@ CREATE TABLE `Donation` (
   PRIMARY KEY (`DonationID`)
 );
 
+CREATE TABLE `Disaster` (
+  `EventID` Int auto_increment,
+  `Country` Varchar(255),
+  `City` Varchar(255),
+  `Zipcode` Varchar(20),
+  PRIMARY KEY (`EventID`)
+);
+
 ALTER TABLE donation
 ADD FOREIGN KEY (MaterialID) REFERENCES Material(MaterialID);
 

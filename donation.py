@@ -1,10 +1,8 @@
 from flask import Flask, flash, session, redirect, url_for, escape, request, render_template
-from hashlib import md5
 from wtforms import Form, DateField, IntegerField, StringField, validators, TextAreaField
 import MySQLdb
 import time
 import copy
-from flask_mysqldb import MySQL
 # rule: all the string passed to sql need in double quote
 
 def execute_sql(db, sql):
@@ -139,6 +137,9 @@ def new_material():
         # execute db and notify user
         if execute_sql(db, sql_new_material):
             flash("You registered a new material. Next please submit your donation form", "success")
+        else:
+            flash("Submission failed. Please check your fields or debug the code.", "danger")
+
         return redirect(url_for('donation'))
 
     return render_template('new_material.html', form=form)
@@ -166,6 +167,9 @@ def donation():
             # execute db and notify user
             if execute_sql(db, sql_new_donation) and execute_sql(db, sql_update_material):
                 flash("Thank you. We got your donation information. You will be contacted if there is a match for your donation.", "success")
+            else:
+                flash("Submission failed. Please check your fields or debug the code.", "danger")
+
         else:
             # update sql db into material table
             sql_new_donation = 'INSERT INTO Donation (Expiration, UserID, TitleID, Available) \
@@ -176,12 +180,51 @@ def donation():
             print(sql_new_donation)
             if execute_sql(db, sql_new_donation):
                 flash("Thank you. We got your volunteering information. You will be contacted if there is a match for your expertise.", "success")
+            else:
+                flash("Submission failed. Please check your fields or debug the code.", "danger")
+
         return redirect(url_for('home')) # pass in the function name to url_for
 
 
     return render_template('donation.html', data=get_new_data(), form=form)
 
 
+class Event(Form):
+    # build form to be finised by user
+    country = StringField('Country (Use full name)', [
+        validators.DataRequired(),
+        validators.Length(min=2, max=255)])
+    city = StringField('City (Use full name)', [
+        validators.DataRequired(),
+        validators.Length(min=2, max=255)])
+    zipcode = StringField('Zipcode', [
+        validators.DataRequired(),
+        validators.Length(min=2, max=20)])
+
+@app.route('/event', methods=['GET', 'POST'])
+def event():
+    form = Event(request.form)
+    if request.method == 'POST' and form.validate():
+        # retreive data from user form
+        country = form.country.data
+        city = form.city.data
+        zipcode = form.zipcode.data
+        sql_new_event = f'INSERT INTO disaster (country, city, zipcode) \
+                VALUES ("{country}", "{city}", "{zipcode}")'
+        print(sql_new_event)
+        print('----------------------------------------------')
+        # execute db and notify user
+        if execute_sql(db, sql_new_event):
+            flash("You registered a new event/disaster. You can submit your request now.", "success")
+        else:
+            flash("Submission failed. Please check your fields or debug the code.", "danger")
+        return redirect(url_for('request_match'))
+
+    return render_template('event.html', form=form)
+
+@app.route('/request_match', methods=['GET', 'POST'])
+def request_match():
+    return render_template('request_match.html')
 
 app.secret_key='secret_key' # a must have, and will be replaced with a real secret key for production
 
