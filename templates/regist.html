@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+  
+  <center>
+  <h2>Regist</h2>
+   <form action="{{ url_for('regist') }}" method="post">
+       <table >
+           <tr>
+               <td>username: </td>
+               <td><input type="text" name="Username" placeholder="Username" > </td>
+           </tr>
+           <tr>
+               <td>SSN：</td>
+               <td><input type="text" name="SSN" placeholder="SSN" > </td>
+           </tr>
+           <tr>
+               <td>Password：</td>
+               <td><input type="password" name="Password" placeholder="Password"></td>
+           </tr>
+           <tr>
+               <td>confirm password：</td>
+               <td><input type="password" name="Password1" placeholder="PasswordAgain"></td>
+           </tr>
+           <tr>
+               <td>Address：</td>
+               <td><input type="text" name="Address" placeholder="Address" > </td>
+           </tr>
+           <tr>
+               <td>City：</td>
+               <td><input type="text" name="City" placeholder="City" > </td>
+           </tr>
+           <tr>
+               <td>State：</td>
+               <td><input type="text" name="State" placeholder="State" > </td>
+           </tr>
+           <tr>
+               <td>Zipcode：</td>
+               <td><input type="text" name="Zipcode" placeholder="Zipcode" > </td>
+           </tr>
+           <tr>
+               <td>Phone：</td>
+               <td><input type="text" name="Phone" placeholder="Phone" > </td>
+           </tr>
+           <tr>
+               <td>Gender：</td>
+               <td>
+                   <select name="Gender">
+                       <option value="female">female</option>
+                       <option value="male">male</option>
+                   </select>
+               </td>
+           </tr>
+           <tr>
+               <td>Age：</td>
+               <td><input type="text" name="Age" placeholder="Age" > </td>
+           </tr>
+           <tr>
+               <td>AuthorityLevel：</td>
+               <td>
+                   <select name="Level">
+                      <option value="2">Level 2</option>
+                      <option value="1">Level 1</option>
+                       
+                   </select>
+               </td>
+           </tr>
+       </table>
+
+       <tr>
+           <input type="submit" value="regist" style="height: 30px;" >
+       </tr>
+
+  </form>
+  </center>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+    <center> 
+        <br><br><br><br> 
+        <h1>Login</h1> 
+        <br><br><br><br> 
+            <form action="{{ url_for('login') }}" method="post" > 
+                <input type="text" name="Username" placeholder="Enter your name"> 
+                <br><br> 
+                <input type="password" name="Password" placeholder="Enter your password"> 
+                <br><br> 
+                <input type="submit" value="login" name="submit"> 
+                <br><br> 
+            </form> 
+        <a href="{{ url_for('regist') }}">regist click here</a>
+    </center>
+
+{% endblock %}

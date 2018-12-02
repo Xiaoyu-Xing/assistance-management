@@ -1,6 +1,25 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+	{% if match is not none %}
+	<table class="table">
+    	<caption style="caption-side: top">Here is your matched assistance.</caption>
+	  <tr>
+	    <th>A</th>
+	  	<th>B</th>
+	    <th>C</th> 
+	  </tr>
+	  	{% for each in match %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		  	<td>{{each[1]}}</td>
+		    <td>{{each[2]}}</td> 
+		  </tr>
+	   	{% endfor %}
+	</table>
+	{% endif %}
+
+
 	<div class="container"><h3>Please submit your request.</h3></div>
 	
 	{% from "includes/_formhelpers.html" import render_field %}

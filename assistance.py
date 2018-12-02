@@ -99,6 +99,8 @@ def event():
 @app.route('/request_match', methods=['GET', 'POST'])
 def request_match():
     form = Request(request.form)
+    match=None
+
     if request.method == 'POST' and form.validate():
         # retreive data from user form
         UserID  = form.UserID.data
@@ -118,7 +120,7 @@ def request_match():
             flash("Submission failed. Please check your fields or debug the code.", "danger")
         return redirect(url_for('request_match'))
     
-    return render_template('request_match.html', form=form, data=get_new_data(db))
+    return render_template('request_match.html', form=form, data=get_new_data(db), match=None or match)
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
@@ -138,6 +140,88 @@ def feedback():
         return redirect(url_for('home'))
 
     return render_template('feedback.html', form=form, data=get_new_data(db))
+
+@app.context_processor
+def context():
+    username=session.get('username')
+    if username:
+        return {'username':username}
+    else:
+        return {}
+
+@app.route('/login/',methods=['POST','GET'])
+def login():
+    if request.method=='GET':
+        return render_template('login.html')
+    else:
+        username = request.form['Username']
+        password = request.form['Password']
+        cursor=db.cursor()
+        sql="select password from user where name='%s'"%username
+        try:
+            cursor.execute(sql)
+            results=cursor.fetchall()
+            for row in results:
+                pasw=row[0]
+                if pasw==password:
+                    session['username'] = username
+                    session.permanemt = True
+                    flash("You sucessfully loged in.", "success")
+                    return redirect(url_for('home'))
+                else:
+                    flash("Username not exist or password error", "danger")
+                    return redirect(url_for('regist'))
+        except:
+            return "Error:unable to fetch data"
+
+
+
+
+@app.route('/regist/',methods=['POST','GET'])
+def regist():
+    if request.method=='GET':
+        return render_template('regist.html')
+    else:
+        username=request.form.get('Username')
+        password=request.form.get('Password')
+        password1=request.form.get('Password1')
+        ssn=request.form.get('SSN')
+        address=request.form.get('Address')
+        city=request.form.get('City')
+        state=request.form.get('State')
+        zipcode=request.form.get('Zipcode')
+        phone=request.form.get('Phone')
+        gender=request.form.get('Gender')
+        age=request.form.get('Age')
+        level=request.form.get('Level')
+        cursor = db.cursor()
+        sql = "select name from user "
+        try:
+            cursor.execute(sql)
+            results = cursor.fetchall()
+            for row in results:
+                name = row[0]
+                #print(name)
+                if name == username:
+                    flash("Username Existed, choose a different one.", "danger")
+                    return redirect(url_for('regist'))
+                else:
+                    if password != password1:
+                        flash("Two passwords not match, try again.", "danger")
+                        return redirect(url_for('regist'))
+            #print(password)
+            sql="insert into user values(null,'%s',%s,'%s','%s','%s','%s',%s,'%s','%s',%s,%s)"%(username,ssn,
+                            password,address,city,state,zipcode,phone,gender,age,level)
+            print(sql)
+            try:
+                cursor.execute(sql)
+                db.commit()
+                return redirect(url_for('login'))
+            except:
+                db.rollback()
+                return "Add failed"
+        except:
+            print("Error:unable to fetch data")
 
 
 app.secret_key='secret_key' # a must have, and will be replaced with a real secret key for production
