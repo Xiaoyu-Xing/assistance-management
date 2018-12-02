@@ -36,3 +36,33 @@ class Event(Form):
     zipcode = StringField('Zipcode', [
         validators.DataRequired(),
         validators.Length(min=2, max=20)])
+
+class Request(Form):
+    # buil form to be finished by user
+    UserID = IntegerField("User ID (Your UserID)", [
+        validators.DataRequired(),
+        validators.NumberRange(min=1)])
+        
+    EventID = IntegerField('Event ID (Choose from below event list)', [validators.NumberRange(min=1)])
+
+    MaterialID = IntegerField('Material ID (Choose from below material list. Input "0" for volunteer)', [validators.NumberRange(min=0)])
+
+    MaterialQuantity = IntegerField('Material Quantity (Integer only, check unit from above list. Input "0" for volunteer)', [validators.NumberRange(min=0)])
+    VolunteerQuantity = IntegerField('Volunteer Quantity (Integer only. Input "0" if no volunteer needed)', [validators.NumberRange(min=0)])
+    Deadline = DateField('Request Deadline Date (Date format: YYYY-MM-DD)', format='%Y-%m-%d')
+    
+    TitleID = IntegerField('Volunteer Occupation Title ID (Choose from above occupation list, input "15" if not volunteer needed, "4" for general volunteer)', [
+        validators.DataRequired(),
+        validators.NumberRange(min=2)])
+    
+    Address = StringField('Address (Enter full address)', [
+        validators.DataRequired(),
+        validators.Length(min=2)])
+
+class Feedback(Form):
+    # build form to be finised by user
+    ResponseID = IntegerField('Response ID (choose from below)', [validators.NumberRange(min=1)])
+
+    Comment = StringField('Comment, max 254 characters', [
+        validators.DataRequired(),
+        validators.Length(min=2, max=254)])

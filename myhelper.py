@@ -68,4 +68,8 @@ def get_new_data(db):
                                     Donation.QuantityAvailable, Donation.Available, Donation.Expiration, Volunteer.Name from donation\
                                     left join material on Donation.MaterialID = Material.MaterialID\
                                     join volunteer on Donation.TitleID = Volunteer.TitleID;')
+    data["disaster"] = get_db_data(db, 'select * from disaster;')
+    data["user"] = get_db_data(db, 'select userID, name, zipcode from user;')
+    data["response"] = get_db_data(db, 'select * from response;')
+    data["feedback"] = get_db_data(db, 'select * from feedback;')
     return data

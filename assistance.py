@@ -1,7 +1,7 @@
 from flask import Flask, flash, session, redirect, url_for, escape, request, render_template
 import MySQLdb
 from myhelper import run_once_to_fill_data, execute_sql, get_db_data, get_new_data
-from myforms import DonationForm, NewMaterialForm, Event
+from myforms import DonationForm, NewMaterialForm, Event, Request, Feedback
 # rule: all the string passed to sql need in double quote
 
 
@@ -70,8 +70,6 @@ def donation():
             values ("{Expiration}", {UserID}, {TitleID}, "{Available}");'
             # sql_new_donation = f'INSERT INTO Donation (Expiration, UserID, TitleID, Available) \
             #         VALUES ("{Expiration}", {UserID}, {TitleID}, "{Available}")'
-            print("---------------------------------------------------------------")
-            print(sql_new_donation)
             if execute_sql(db, sql_new_donation):
                 flash("Thank you. We got your volunteering information. You will be contacted if there is a match for your expertise.", "success")
             else:
@@ -90,8 +88,6 @@ def event():
         zipcode = form.zipcode.data
         sql_new_event = f'INSERT INTO disaster (country, city, zipcode) \
                 VALUES ("{country}", "{city}", "{zipcode}")'
-        print(sql_new_event)
-        print('----------------------------------------------')
         # execute db and notify user
         if execute_sql(db, sql_new_event):
             flash("You registered a new event/disaster. You can submit your request now.", "success")
@@ -102,7 +98,47 @@ def event():
 
 @app.route('/request_match', methods=['GET', 'POST'])
 def request_match():
-    return render_template('request_match.html')
+    form = Request(request.form)
+    if request.method == 'POST' and form.validate():
+        # retreive data from user form
+        UserID  = form.UserID.data
+        EventID = form.EventID.data
+        MaterialID = form.MaterialID.data
+        MaterialQuantity = form.MaterialQuantity.data
+        VolunteerQuantity = form.VolunteerQuantity.data
+        Deadline = form.Deadline.data
+        TitleID = form.TitleID.data
+        Address = form.Address.data
+        sql_new_request = f'INSERT INTO request (EventID, MaterialID, Quantity, VolunteerQuantity, TitleID, Address, UserID, Deadline, Status) \
+                VALUES ({EventID}, {MaterialID}, {MaterialQuantity}, {VolunteerQuantity}, {TitleID}, "{Address}", {UserID}, "{Deadline}", 0);'
+        # execute db and notify user
+        if execute_sql(db, sql_new_request):
+            flash("You registered a new request.", "success")
+        else:
+            flash("Submission failed. Please check your fields or debug the code.", "danger")
+        return redirect(url_for('request_match'))
+    
+    return render_template('request_match.html', form=form, data=get_new_data(db))
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    form = Feedback(request.form)
+    if request.method == 'POST' and form.validate():
+        # retreive data from user form
+        ResponseID  = form.ResponseID.data
+        Comment = form.Comment.data
+        sql_new_feedback = f'INSERT INTO feedback (ResponseID, Comment) \
+                VALUES ({ResponseID}, "{Comment}");'
+        # execute db and notify user
+
+        if execute_sql(db, sql_new_feedback):
+            flash("You submited a new feedback, thank you.", "success")
+        else:
+            flash("Submission failed. Please check your fields or debug the code.", "danger")
+        return redirect(url_for('home'))
+
+    return render_template('feedback.html', form=form, data=get_new_data(db))
+
 
 app.secret_key='secret_key' # a must have, and will be replaced with a real secret key for production
 if __name__ == '__main__':

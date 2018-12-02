@@ -1,13 +1,108 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-
 	<div class="container"><h3>Please submit your request.</h3></div>
 	
 	{% from "includes/_formhelpers.html" import render_field %}
 	<div class="container">		
-		<p>Not here yet.</p>
+		<form method="POST" action="">
+			<div class="form-group">
+				{{render_field(form.UserID, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.EventID, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.MaterialID, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.MaterialQuantity, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.TitleID, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.VolunteerQuantity, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.Deadline, class_="form-control")}}
+			</div>
+			<div class="form-group">
+				{{render_field(form.Address, class_="form-control")}}
+			</div>
+					
+			<p><input type="submit" value="Submit" class="btn btn-primary"></p>
+		</form>
 	</div>
+
+	<table class="table">
+    	<caption style="caption-side: top">Check your user id below fill your request (dropdown menu is a better option, but not the focus of this course)</caption>
+	  <tr>
+	    <th>User ID</th>
+	  	<th>Name</th>
+	    <th>Zipcode</th> 
+	  </tr>
+	  	{% for each in data["user"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		  	<td>{{each[1]}}</td>
+		    <td>{{each[2]}}</td> 
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+	<table class="table">
+    	<caption style="caption-side: top">Check an event from below to fill your request (dropdown menu is a better option, but not the focus of this course)</caption>
+	  <tr>
+	    <th>Event ID</th>
+	  	<th>Country</th>
+	    <th>City</th> 
+	    <th>Zipcode</th> 
+
+	  </tr>
+	  	{% for each in data["disaster"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		  	<td>{{each[1]}}</td>
+		    <td>{{each[2]}}</td> 
+		    <td>{{each[3]}}</td> 
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+	<table class="table">
+    	<caption style="caption-side: top">Check a material below to fill your request (unit and quantity listed for presentation purpose, dropdown menu is a better option, but not the focus of this course)</caption>
+	  <tr>
+	    <th>Material ID</th>
+	    <th>Material Name</th> 
+	    <th>Unit</th>
+	    <th>Quantity in Total</th>
+	  </tr>
+	  	{% for each in data["material"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		    <td>{{each[1]}}</td> 
+		    <td>{{each[2]}}</td>
+		    <td>{{each[3]}}</td>
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+	<table class="table">
+    	<caption style="caption-side: top">Chekc a volunteer occupation below to fill your request (dropdown menu is a better option, but not the focus of this course.)</caption>
+	  <tr>
+	    <th>Title ID</th>
+	    <th>Volunteer Occupation</th> 
+	  </tr>
+	  	{% for each in data["volunteer"] %}
+		  <tr>
+		    <td>{{each[0]}}</td>
+		    <td>{{each[1]}}</td> 
+		  </tr>
+	   	{% endfor %}
+	</table>
+
+
 
 	
 {% endblock %}
