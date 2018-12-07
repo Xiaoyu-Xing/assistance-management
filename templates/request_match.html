@@ -1,25 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-	{% if match is not none %}
-	<table class="table">
-    	<caption style="caption-side: top">Here is your matched assistance.</caption>
-	  <tr>
-	    <th>A</th>
-	  	<th>B</th>
-	    <th>C</th> 
-	  </tr>
-	  	{% for each in match %}
-		  <tr>
-		    <td>{{each[0]}}</td>
-		  	<td>{{each[1]}}</td>
-		    <td>{{each[2]}}</td> 
-		  </tr>
-	   	{% endfor %}
-	</table>
-	{% endif %}
-
-
 	<div class="container"><h3>Please submit your request.</h3></div>
 	
 	{% from "includes/_formhelpers.html" import render_field %}
@@ -55,7 +36,7 @@
 	</div>
 
 	<table class="table">
-    	<caption style="caption-side: top">Check your user id below fill your request (dropdown menu is a better option, but not the focus of this course)</caption>
+    	<caption style="caption-side: top">Check your user id below fill your request</caption>
 	  <tr>
 	    <th>User ID</th>
 	  	<th>Name</th>
@@ -71,7 +52,7 @@
 	</table>
 
 	<table class="table">
-    	<caption style="caption-side: top">Check an event from below to fill your request (dropdown menu is a better option, but not the focus of this course)</caption>
+    	<caption style="caption-side: top">Check an event from below to fill your request</caption>
 	  <tr>
 	    <th>Event ID</th>
 	  	<th>Country</th>
@@ -90,7 +71,7 @@
 	</table>
 
 	<table class="table">
-    	<caption style="caption-side: top">Check a material below to fill your request (unit and quantity listed for presentation purpose, dropdown menu is a better option, but not the focus of this course)</caption>
+    	<caption style="caption-side: top">Check a material below to fill your request</caption>
 	  <tr>
 	    <th>Material ID</th>
 	    <th>Material Name</th> 

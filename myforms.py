@@ -66,3 +66,7 @@ class Feedback(Form):
     Comment = StringField('Comment, max 254 characters', [
         validators.DataRequired(),
         validators.Length(min=2, max=254)])
+class UserIDForm(Form):
+    User =IntegerField("Your User ID", [
+        validators.DataRequired(),
+        validators.NumberRange(min=1)])

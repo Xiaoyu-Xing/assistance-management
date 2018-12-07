@@ -73,3 +73,58 @@ def get_new_data(db):
     data["response"] = get_db_data(db, 'select * from response;')
     data["feedback"] = get_db_data(db, 'select * from feedback;')
     return data
+
+def match_material(db, mat, quant):
+    t1 = get_db_data(db, 'select QuantityTotal from Material where MaterialID = %s and QuantityTotal >= %s' % (mat, quant,))
+    t2 = t1[0]
+    t3 = t2[0]
+    if t3 > 0:
+        return True
+    else:
+        return False
+    
+def match_volunteer(db, vol, quant, date):
+    if vol == 15:
+        return True
+    t1 = get_db_data(db, 'select count(DonationID) from Donation where TitleID = "%s" and available > "%s"' % (vol, date,))
+    t1 = t1[0][0]
+    if t1 >= quant:
+        return True
+    else:
+        return False
+        
+def request_match_funct(db, mat, quant1, vol, quant2, request, date):
+    matAmount = quant1
+    volAmount = quant2
+    while matAmount > 0:
+        data = get_db_data(db, 'select DonationID, QuantityAvailable from Donation where MaterialID = %s and QuantityAvailable > 0 Limit 1' % (mat,))
+        amount = data[0][1]
+        idvalue = data[0][0]
+        if amount < matAmount:
+            diff = matAmount - amount
+            execute_sql(db, 'update Donation set QuantityAvailable = 0 where DonationID = %s', (idvalue,))
+            execute_sql(db, 'insert into Response (RequestID, DonationID, MaterialQuantity) values (%s, %s, %s)'% (request, idvalue, amount,))
+            matAmount = diff
+            execute_sql(db, 'update Request set Quantity = %d where RequestID = %s', (matAmount, request,))
+            
+        else:
+            diff = amount - matAmount
+            execute_sql(db, 'update Donation set QuantityAvailable = %s where DonationID = %s'% (diff, idvalue,))
+            execute_sql(db, 'insert into Response(RequestID, DonationID, MaterialQuantity) values (%s, %s, %s)' % (request, idvalue, matAmount,))
+            execute_sql(db, 'update Request set Quantity = 0 where RequestID = %s' % (request,))
+            matAmount = 0
+    t5 = get_db_data(db, 'select QuantityTotal from Material where MaterialID = %s Limit 1' % (mat,))
+    newAmount = t5[0][0]
+    newAmount = newAmount - quant1
+    try_sql = 'UPDATE Material SET QuantityTotal = %s where MaterialID= %s;' % (newAmount, mat,)
+    execute_sql(db, try_sql)
+    while volAmount > 0:
+        data = get_db_data(db, 'select DonationID, TitleID from Donation where TitleID = "%s" and Expiration > "%s" Limit 1'% (vol,date,))
+        idvalue = data[0][0]
+        execute_sql(db, 'update Donation set Available = "%s" where DonationID = %s'% (date, idvalue,))
+        execute_sql(db, 'insert into Response (RequestID, DonationID) values (%s, %s)'% (request, idvalue,))
+        volAmount = volAmount - 1
+        execute_sql(db, 'update Request set VolunteerQuantity = %s where RequestID = %s'% (volAmount, request,))
+      
+    execute_sql(db, 'update Request set Status = 1 where RequestID = %s'% (request,))
+    return True

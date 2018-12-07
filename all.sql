@@ -91,8 +91,8 @@ ADD FOREIGN KEY (MaterialID) REFERENCES Material(MaterialID);
 ALTER TABLE donation
 ADD FOREIGN KEY (TitleID) REFERENCES Volunteer(TitleID);
 
--- ALTER TABLE donation
--- ADD FOREIGN KEY (UserID) REFERENCES User(UserID);
+ALTER TABLE donation
+ADD FOREIGN KEY (UserID) REFERENCES User(UserID);
 
 ALTER TABLE User
 ADD FOREIGN KEY (AuthorityLevel) REFERENCES Authority(AuthorLevel);

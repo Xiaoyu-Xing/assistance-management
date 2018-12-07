@@ -1,14 +1,14 @@
 from flask import Flask, flash, session, redirect, url_for, escape, request, render_template
 import MySQLdb
-from myhelper import run_once_to_fill_data, execute_sql, get_db_data, get_new_data
-from myforms import DonationForm, NewMaterialForm, Event, Request, Feedback
+from myhelper import run_once_to_fill_data, execute_sql, get_db_data, get_new_data, request_match_funct, match_volunteer, match_material
+from myforms import DonationForm, NewMaterialForm, Event, Request, Feedback, UserIDForm
 # rule: all the string passed to sql need in double quote
 
 
 def connection():
     #connect to db
     db = MySQLdb.connect(host='localhost', user='root', passwd='root', db='assistancemanagement')
-    # run_once_to_fill_data(db) # used to initialize fake data in database
+    #run_once_to_fill_data(db) # used to initialize fake data in database
     cursor = db.cursor()
     return db
 
@@ -99,8 +99,6 @@ def event():
 @app.route('/request_match', methods=['GET', 'POST'])
 def request_match():
     form = Request(request.form)
-    match=None
-
     if request.method == 'POST' and form.validate():
         # retreive data from user form
         UserID  = form.UserID.data
@@ -115,12 +113,21 @@ def request_match():
                 VALUES ({EventID}, {MaterialID}, {MaterialQuantity}, {VolunteerQuantity}, {TitleID}, "{Address}", {UserID}, "{Deadline}", 0);'
         # execute db and notify user
         if execute_sql(db, sql_new_request):
-            flash("You registered a new request.", "success")
+            if match_material(db, MaterialID, MaterialQuantity):
+                if match_volunteer(db, TitleID, VolunteerQuantity, Deadline):
+                    RequestValue = get_db_data(db, 'select RequestID FROM Request where UserID = %s and MaterialID = %s and EventID = %s and TitleID = %s' % (UserID, MaterialID, EventID, TitleID,))
+                    RequestID = RequestValue[0][0]
+                    request_match_funct(db, MaterialID, MaterialQuantity, TitleID, VolunteerQuantity, RequestID, Deadline)
+                    flash("Your request has been matched.", "success")
+                else:
+                    flash("No request match, insufficient volunteers available.", "success")
+            else :
+                flash("No request match. Please review available materials.", "danger")
         else:
             flash("Submission failed. Please check your fields or debug the code.", "danger")
         return redirect(url_for('request_match'))
     
-    return render_template('request_match.html', form=form, data=get_new_data(db), match=None or match)
+    return render_template('request_match.html', form=form, data=get_new_data(db))
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
@@ -141,6 +148,23 @@ def feedback():
 
     return render_template('feedback.html', form=form, data=get_new_data(db))
 
+@app.route('/match_form', methods=['GET', 'POST'])
+def match_form():
+    form = UserIDForm(request.form)
+    if request.method == 'POST' and form.validate():
+        User = form.User.data
+        sql_match_return = 'SELECT DonationID FROM Donation WHERE UserID = %s;' % (User)
+        don_data = get_db_data(db, sql_match_return)
+        don_list = ''
+        for items in don_data:
+            holder_2 = get_db_data(db, 'Select RequestID, MaterialQuantity FROM Response WHERE DonationID = %s;'%(items[0]))
+            for itemss in holder_2:
+                holder1 = get_db_data(db, 'SELECT MaterialID, Address, TitleID FROM Request WHERE RequestID = %s;'%(itemss[0]))
+                for itemsss in holder1:
+                    don_list = don_list + 'You have been matched to provide %s of material %s and assist as %s at %s. ' %(itemss[1], itemsss[0], itemsss[2], itemsss[1])
+        flash (don_list, "success")
+        return redirect(url_for('match_form'))
+    return render_template('match.html', form=form, data=get_new_data(db))
 @app.context_processor
 def context():
     username=session.get('username')
@@ -158,23 +182,24 @@ def login():
         password = request.form['Password']
         cursor=db.cursor()
         sql="select password from user where name='%s'"%username
-        try:
-            cursor.execute(sql)
-            results=cursor.fetchall()
-            for row in results:
-                pasw=row[0]
-                if pasw==password:
-                    session['username'] = username
-                    session.permanemt = True
-                    flash("You sucessfully loged in.", "success")
-                    return redirect(url_for('home'))
-                else:
-                    flash("Username not exist or password error", "danger")
-                    return redirect(url_for('regist'))
-        except:
-            return "Error:unable to fetch data"
+        cursor.execute(sql)
+        results=cursor.fetchall()
+        for row in results:
+            pasw=row[0]
+            if pasw==password:
+                session['username'] = username
+                session.permanemt = True
+                code = get_db_data(db, 'select UserID from User where Name = "%s"' %(username))
+                print(code)
+                code_value = code[0]
+                flash("Your User ID is %s, please record this."%(code_value), "success")
+                return redirect(url_for('home'))
+            else:
+                flash("Username not exist or password error", "danger")
+                return redirect(url_for('regist'))
 
 
+               
 
 
 @app.route('/regist/',methods=['POST','GET'])
@@ -207,10 +232,10 @@ def regist():
                     return redirect(url_for('regist'))
                 else:
                     if password != password1:
-                        flash("Two passwords not match, try again.", "danger")
+                        flash("Two passwords do not match, try again.", "danger")
                         return redirect(url_for('regist'))
             #print(password)
-            sql="insert into user values(null,'%s',%s,'%s','%s','%s','%s',%s,'%s','%s',%s,%s)"%(username,ssn,
+            sql="insert into user(Name, SSN, Password, Address, City, State, Zipcode, Phone, Gender, Age, AuthorityLevel) values('%s',%s,'%s','%s','%s','%s','%s','%s','%s',%s,%s);"%(username,ssn,
                             password,address,city,state,zipcode,phone,gender,age,level)
             print(sql)
             try:
@@ -219,7 +244,8 @@ def regist():
                 return redirect(url_for('login'))
             except:
                 db.rollback()
-                return "Add failed"
+                flash("Add failed.", "danger")
+                return redirect(url_for('regist'))
         except:
             print("Error:unable to fetch data")
 
